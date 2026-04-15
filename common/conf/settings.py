@@ -5,19 +5,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class PostgresSettings(BaseSettings):
     """Common postgres settings."""
 
-    driver: str = ""
-    user: str = "postgres"
-    password: str = "postgres"
-    db: str = "postgres"
-    host: str = "0.0.0.0"
     echo: bool = False
 
     @property
     def db_uri(self) -> str:
         """Return database uri."""
-        return f"{self.driver}://{self.user}:{self.password}@{self.host}/{self.db}"
 
-    model_config = SettingsConfigDict(env_prefix="POSTGRES_", env_file=[".env", ".env.prod"])
+        SQLALCHEMY_DATABASE_URL = "postgresql://neondb_owner:npg_7Lq4WPbCGOes@ep-snowy-voice-agbqqvf6-pooler.c-2.eu-central-1.aws.neon.tech/neondb"
+        ASYNC_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+        return ASYNC_DATABASE_URL
 
 
 class OakSettings(BaseSettings):

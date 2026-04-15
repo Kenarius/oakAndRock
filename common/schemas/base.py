@@ -34,3 +34,11 @@ class OrderedItem(BaseModel):
     position: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MarkSchema(BaseModel):
+    """Mark schema."""
+
+    image: str
+    title: str
+    subtitle: str

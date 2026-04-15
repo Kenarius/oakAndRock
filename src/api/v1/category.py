@@ -2,7 +2,9 @@ import uuid as _uuid
 
 from common.core.router import APIRouter
 from common.db import get_async_session
-from common.schemas.category import DetailCategorySchema, ShortCategorySchema
+from common.schemas.catalog import CatalogSchema
+from common.schemas.category import DetailCategorySchema, ShortCategorySchema, CatalogsAndCategoriesResponse
+from src.providers.catalog import provide_catalog_service
 from src.providers.category import provide_category_service
 
 api_router = APIRouter()
@@ -21,14 +23,22 @@ async def get_category(uuid: _uuid.UUID) -> DetailCategorySchema:
 
 @api_router.get(
     "/",
-    response_model=list[ShortCategorySchema],
+    response_model=CatalogsAndCategoriesResponse,
 )
-async def get_all_category() -> list[ShortCategorySchema]:
+async def get_all_category() -> CatalogsAndCategoriesResponse:
     """GET category controller."""
     async with get_async_session() as session:
         service = provide_category_service(session)
+        catalog_service = provide_catalog_service(session)
+        catalogs = await catalog_service.get_all()
         categories = await service.get_all()
-        parsed_category = [
-            ShortCategorySchema.model_validate(category, from_attributes=True) for category in categories
-        ]
-    return parsed_category
+    parsed_categories = [
+        ShortCategorySchema.model_validate(category, from_attributes=True) for category in categories
+    ]
+    parsed_catalogs = [
+        CatalogSchema.model_validate(catalog, from_attributes=True) for catalog in catalogs
+    ]
+    return CatalogsAndCategoriesResponse(
+        categories=parsed_categories,
+        catalogs=parsed_catalogs,
+    )

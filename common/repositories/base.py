@@ -34,6 +34,6 @@ class BaseRepository(IRepository):
         """Get object by primary key."""
         res = await self._session.execute(select(self.model).where(self.model.uuid == pk))  # noqa
         obj = res.scalars().first()
-        self.check_object(obj)    # noqa
+        # self.check_object(obj)    # noqa
         await self._session.refresh(obj)
         return obj

@@ -6,6 +6,6 @@ from src.services.category import CategoryService
 
 def provide_category_service(session: AsyncSession) -> CategoryService:
     """Provide admin events service."""
-    repository = CategoryRepository(session)
-    service = CategoryService(repository)
+    category_repository = CategoryRepository(session)
+    service = CategoryService(category_repository=category_repository)
     return service

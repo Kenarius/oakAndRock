@@ -16,9 +16,9 @@ class Category(BaseModel, UUIDMixin, TimestampMixin, TitleMixin):
     __tablename__ = "category"
 
     description: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
-    main_media_url: Mapped[str] = mapped_column(String(500))
-    first_media_url: Mapped[str] = mapped_column(String(500))
-    second_media_url: Mapped[str] = mapped_column(String(500))
+    main_media_url: Mapped[str] = mapped_column(String(5000))
+    first_media_url: Mapped[str] = mapped_column(String(5000))
+    second_media_url: Mapped[str] = mapped_column(String(5000))
     marks: Mapped[list] = mapped_column(JSONB, nullable=True, server_default="[]")
 
     items: Mapped[list["Item"]] = relationship(

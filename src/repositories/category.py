@@ -26,5 +26,5 @@ class CategoryRepository(BaseRepository):
             .where(self.model.uuid == pk)  # noqa
         )
         obj = res.scalars().first()
-        self.check_object(obj)  # noqa
+        # self.check_object(obj)  # noqa
         return obj

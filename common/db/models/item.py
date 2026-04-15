@@ -13,7 +13,7 @@ class Item(BaseModel, UUIDMixin, TimestampMixin, TitleMixin):
 
     description: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
     subtitle: Mapped[str] = mapped_column(String(255), nullable=True, server_default="")
-    main_media_url: Mapped[str] = mapped_column(String(500))
+    main_media_url: Mapped[str] = mapped_column(String(5000))
     media_urls: Mapped[list] = mapped_column(JSONB)
     description_marks: Mapped[list[list[str]]] = mapped_column(JSONB, nullable=True)
     marks: Mapped[list] = mapped_column(JSONB, nullable=True, server_default="[]")

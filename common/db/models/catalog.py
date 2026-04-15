@@ -1,10 +1,10 @@
 from sqlalchemy import Text, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from common.db import BaseModel, UUIDMixin, TimestampMixin, TitleMixin
+from common.db import BaseModel, UUIDMixin, TimestampMixin
 
 
-class Catalog(BaseModel, UUIDMixin, TimestampMixin, TitleMixin):
+class Catalog(BaseModel, UUIDMixin, TimestampMixin):
     """Catalog model definition."""
 
     __tablename__ = "catalog"
