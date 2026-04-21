@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 
 from common.schemas.base import MarkSchema
@@ -29,6 +29,8 @@ class DetailItemSchema(BaseModel):
     paragraph: str
     description: str
     price: str
-    media_urls: str
-    description_marks: list
-    marks: list
+    media_urls: list
+    description_marks: list = []
+    marks: list = []
+
+    model_config = ConfigDict(from_attributes=True)
