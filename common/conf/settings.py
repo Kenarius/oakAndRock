@@ -13,7 +13,7 @@ class PostgresSettings(BaseSettings):
     def db_uri(self) -> str:
         """Return database uri."""
 
-        SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL", "0.0.0.0")
+        SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL", "postgresql://neondb_owner:npg_7Lq4WPbCGOes@ep-snowy-voice-agbqqvf6-pooler.c-2.eu-central-1.aws.neon.tech/neondb")
         ASYNC_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
         return ASYNC_DATABASE_URL
 
