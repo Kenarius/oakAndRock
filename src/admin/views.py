@@ -99,10 +99,14 @@ class BlogAdmin(ModelView, model=Blog):
     column_sortable_list = [Blog.created_at, Blog.title]
 
     column_formatters = {
-        Blog.first_media_url: lambda
-            m: f'<a href="{m.first_media_url}" target="_blank">Открыть</a>' if m.first_media_url else "",
-        Blog.second_media_url: lambda
-            m: f'<a href="{m.second_media_url}" target="_blank">Открыть</a>' if m.second_media_url else "",
+        Blog.first_media_url: lambda value, _: (
+            f'<a href="{value}" target="_blank">Открыть</a>'
+            if value else ""
+        ),
+        Blog.second_media_url: lambda value, _: (
+            f'<a href="{value}" target="_blank">Открыть</a>'
+            if value else ""
+        ),
     }
 
     form_widget_args = {
@@ -127,9 +131,14 @@ class CatalogAdmin(ModelView, model=Catalog):
     column_sortable_list = [Catalog.created_at, Catalog.title]
 
     column_formatters = {
-        Catalog.image: lambda
-            m: f'<img src="{m.image}" style="max-height: 100px; max-width: 100px;" />' if m.image else "",
-        Catalog.pdf_url: lambda m: f'<a href="{m.pdf_url}" target="_blank">Открыть PDF</a>' if m.pdf_url else "",
+        Catalog.image: lambda value, _: (
+            f'<img src="{value}" style="max-height: 100px; max-width: 100px;" />'
+            if value else ""
+        ),
+        Catalog.pdf_url: lambda value, _: (
+            f'<a href="{value}" target="_blank">Открыть PDF</a>'
+            if value else ""
+        ),
     }
 
     form_widget_args = {
