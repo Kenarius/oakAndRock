@@ -6,14 +6,16 @@ import sys
 import uvicorn
 from fastapi import FastAPI, Request
 from sqladmin import Admin
+from starlette.middleware.sessions import SessionMiddleware
 
 from common.conf.config_swagger import get_swagger_config
 from common.conf.settings import settings
 from common.core.enums import ServiceEnum
 from common.core.exceptions.exception_handlers import add_exception_handlers
 from common.db.engine import get_engine
+from src.admin.auth import SESSION_SECRET, AdminAuthBackend
 from src.api.router import api_router
-from src.admin.views import CategoryAdmin, ItemAdmin
+from src.admin.views import CategoryAdmin, ItemAdmin, CatalogAdmin, BlogAdmin
 
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 
@@ -41,14 +43,17 @@ sys.excepthook = handle_uncaught_exception
 def init_app() -> FastAPI:
     """Create FastAPI app."""
     app = FastAPI(**get_swagger_config(ServiceEnum.OAK))
-
+    app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
     engine = get_engine(
         settings.postgres.db_uri,
         echo=settings.postgres.echo,
     )
-    admin = Admin(app, engine, base_url="/oak/admin")
+    admin_auth = AdminAuthBackend(SESSION_SECRET)
+    admin = Admin(app, engine, base_url="/oak/admin", authentication_backend=admin_auth)
     admin.add_view(CategoryAdmin)
     admin.add_view(ItemAdmin)
+    admin.add_view(CatalogAdmin)
+    admin.add_view(BlogAdmin)
 
     app.include_router(api_router)
     add_exception_handlers(app=app)
@@ -62,9 +67,6 @@ def init_app() -> FastAPI:
             raise
 
     return app
-
-
-
 
 
 if __name__ == "__main__":
