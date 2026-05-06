@@ -170,6 +170,12 @@ class CategoryAdmin(ModelView, model=Category):
     column_labels = {
         Category.marks: "Метки вида [[\"📱\", \"Название1\", \"Описание1\"], [\"⭐\","
                         " \"Название2\", \"Описание2\"], [\"🎨\", \"Название3\", \"Описание3\"]] ",
+        Category.title: "Название категории",
+        Category.paragraph: "Заголовок",
+        Category.description: "Описание",
+        Category.main_media_url: "Ссылка на Главное фото",
+        Category.first_media_url: "Ссылка на Первое фото",
+        Category.second_media_url: "Ссылка на Второе фото",
     }
 
 
