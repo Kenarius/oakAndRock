@@ -93,43 +93,24 @@ async def upload_file_to_disk(file: UploadFile, name: str, folder: str = "blog")
         upload_resp.raise_for_status()
 
     # Шаг 3: Publish — двухэтапный процесс!
+    public_data = await publish_file(disk_path)
+    # После получения public_data с "public_url" и "public_key":
+    public_key = public_data["public_key"]  # "6RWgHAgkTjbwRjS0..." из вашего лога
+
+    # Шаг 4: Получить ПРЯМУЮ ссылку для <img src>
     async with httpx.AsyncClient(timeout=30.0) as client:
-        # 3a: Инициировать публикацию (PUT)
-        publish_init = await client.put(
-            f"{YANDEX_DISK_API_URL}/publish",
-            headers=headers,
-            params={"path": disk_path}
+        download_resp = await client.get(
+            "https://cloud-api.yandex.net/v1/disk/public/resources/download",
+            headers=headers,  # Токен нужен!
+            params={"public_key": public_key}
         )
-        if publish_init.status_code != 200:
-            raise RuntimeError(f"Publish init failed: {publish_init.text}")
+        if download_resp.status_code != 200:
+            raise RuntimeError(f"Direct link failed: {download_resp.text}")
 
-        init_data = publish_init.json()
-        if "href" not in init_data:
-            raise RuntimeError(f"No publish href: {init_data}")
+        direct_data = download_resp.json()
+        print(f"direct response: {direct_data}")
+        if "href" not in direct_data:
+            raise RuntimeError(f"No direct href: {direct_data}")
 
-        # 3b: Завершить по полученной ссылке (GET)
-        public_resp = await client.get(init_data["href"], headers=headers)
-        if public_resp.status_code != 200:
-            raise RuntimeError(f"Publish activate failed: {public_resp.text}")
-
-        public_data = public_resp.json()
-        # После получения public_data с "public_url" и "public_key":
-        public_key = public_data["public_key"]  # "6RWgHAgkTjbwRjS0..." из вашего лога
-
-        # Шаг 4: Получить ПРЯМУЮ ссылку для <img src>
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            download_resp = await client.get(
-                "https://cloud-api.yandex.net/v1/disk/public/resources/download",
-                headers=headers,  # Токен нужен!
-                params={"public_key": public_key}
-            )
-            if download_resp.status_code != 200:
-                raise RuntimeError(f"Direct link failed: {download_resp.text}")
-
-            direct_data = download_resp.json()
-            print(f"direct response: {direct_data}")
-            if "href" not in direct_data:
-                raise RuntimeError(f"No direct href: {direct_data}")
-
-        direct_url = direct_data["href"]  # https://downloader.disk.yandex.ru/disk/...&media_type=image
-        return direct_url
+    direct_url = direct_data["href"]  # https://downloader.disk.yandex.ru/disk/...&media_type=image
+    return direct_url
