@@ -1,4 +1,5 @@
 from fastapi import UploadFile
+from uuid import UUID
 
 from common.core.router import APIRouter
 from common.db import get_async_session
@@ -39,4 +40,24 @@ async def create_blog(
     async with get_async_session() as session:
         service = provide_blog_service(session)
         blog = await service.create(data)
+    return BlogSchema.model_validate(blog, from_attributes=True)
+
+
+@api_router.patch(
+    "/{blog_id}",
+    response_model=BlogSchema,
+)
+async def update_blog(
+        blog_id: UUID,
+        title: str | None = None,
+        paragraph: str | None = None,
+        description: str | None = None,
+        first_image: UploadFile | None = None,
+        second_image: UploadFile | None = None
+) -> BlogSchema:
+    data = {"title": title, "paragraph": paragraph, "description": description,
+            "first_image": first_image, "second_image": second_image}
+    async with get_async_session() as session:
+        service = provide_blog_service(session)
+        blog = await service.update(blog_id, data)
     return BlogSchema.model_validate(blog, from_attributes=True)

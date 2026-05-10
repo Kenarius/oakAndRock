@@ -55,10 +55,13 @@ class BaseRepository(IRepository):
         return obj
 
     async def update(
-            self, pk: uuid.UUID, input_data: update_scheme, partial: bool = False
+            self, pk: uuid.UUID, input_data: update_scheme, partial: bool = True
     ) -> Union[model, DBException]:
         """Update object by specified primary key."""
-        values_dump_data = input_data.model_dump(exclude_unset=partial) # noqa
+        if hasattr(input_data, "model_dump"):
+            values_dump_data = input_data.model_dump(exclude_unset=partial) # noqa
+        else:
+            values_dump_data = input_data
         if values_dump_data:
             updated_obj = await self._session.execute(
                 update(self.model)
