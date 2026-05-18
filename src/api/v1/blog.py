@@ -61,3 +61,15 @@ async def update_blog(
         service = provide_blog_service(session)
         blog = await service.update(blog_id, data)
     return BlogSchema.model_validate(blog, from_attributes=True)
+
+@api_router.delete(
+    "/{item_id}",
+    status_code=204
+)
+async def delete_blog_by_id(item_id: UUID):
+    """Delete blog."""
+    async with get_async_session() as session:
+        service = provide_blog_service(session)
+        await service.delete_by_uuid(item_id)
+
+    return

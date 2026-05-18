@@ -3,7 +3,7 @@
 import uuid
 from typing import Any, Sequence, TypeVar, Union
 
-from sqlalchemy import Row, RowMapping, select, update
+from sqlalchemy import Row, RowMapping, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common.abstract.repository import IRepository
