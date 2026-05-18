@@ -3,7 +3,7 @@
 import uuid
 from typing import Any, Sequence, TypeVar, Union
 
-from sqlalchemy import Row, RowMapping, select, update, delete
+from sqlalchemy import Row, RowMapping, select, update, delete, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common.abstract.repository import IRepository
@@ -40,7 +40,7 @@ class BaseRepository(IRepository):
 
     async def list(self, filters: Union[tuple, None] = None) -> Sequence[Row | RowMapping | Any]:
         """Get list of filtered objects."""
-        query = select(self.model).order_by(self.model.created_at)
+        query = select(self.model).order_by(desc(self.model.created_at))
         if filters is not None:
             query.filter(*filters)
         objects = await self._session.execute(query)
