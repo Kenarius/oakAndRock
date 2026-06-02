@@ -28,6 +28,10 @@ class AdminAuthSettings(BaseSettings):
     jwt_secret: str | None = Field(default=None, validation_alias="ADMIN_JWT_SECRET")
     jwt_algorithm: str = Field(default="HS256", validation_alias="ADMIN_JWT_ALGORITHM")
     access_token_expire_minutes: int = Field(default=60, validation_alias="ADMIN_ACCESS_TOKEN_EXPIRE_MINUTES")
+    refresh_token_expire_minutes: int = Field(
+        default=60 * 24 * 30,  # 30 days
+        validation_alias="ADMIN_REFRESH_TOKEN_EXPIRE_MINUTES",
+    )
 
     model_config = SettingsConfigDict(
         env_file=[".env", ".env.prod"],
