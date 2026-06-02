@@ -75,8 +75,11 @@ async def ensure_folder_exists(folder_path: str) -> None:
 
 async def upload_file_to_disk(file: UploadFile, name: str, folder: str = "blog") -> str:
     folder_path = f"/app/{folder}"
-    await ensure_folder_exists(folder_path)
-
+    try:
+        await ensure_folder_exists(folder_path)
+    except Exception as e:
+        print('Hey1')
+        print(e)
     filename = f"{name}.{uuid.uuid4().hex[:8]}"
     disk_path = f"{folder_path}/{filename}"
 
@@ -86,6 +89,8 @@ async def upload_file_to_disk(file: UploadFile, name: str, folder: str = "blog")
         resp = await client.get(f"{YANDEX_DISK_API_URL}/upload", headers=headers, params=params)
         data = resp.json()
         if "href" not in data:
+            print('Hey2')
+            print(data)
             raise RuntimeError(f"Upload URL failed: {data}")
 
         file.file.seek(0)

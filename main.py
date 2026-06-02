@@ -13,7 +13,7 @@ from common.conf.settings import settings
 from common.core.enums import ServiceEnum
 from common.core.exceptions.exception_handlers import add_exception_handlers
 from common.db.engine import get_engine
-from src.admin.auth import SESSION_SECRET, AdminAuthBackend
+from src.admin.auth import AdminAuthBackend
 from src.api.router import api_router
 from src.admin.views import CategoryAdmin, ItemAdmin, CatalogAdmin, BlogAdmin
 
@@ -43,12 +43,13 @@ sys.excepthook = handle_uncaught_exception
 def init_app() -> FastAPI:
     """Create FastAPI app."""
     app = FastAPI(**get_swagger_config(ServiceEnum.OAK))
-    app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
+    session_secret = settings.admin_auth.session_secret
+    app.add_middleware(SessionMiddleware, secret_key=session_secret)
     engine = get_engine(
         settings.postgres.db_uri,
         echo=settings.postgres.echo,
     )
-    admin_auth = AdminAuthBackend(SESSION_SECRET)
+    admin_auth = AdminAuthBackend(session_secret)
     admin = Admin(app, engine, base_url="/oak/admin", authentication_backend=admin_auth)
     admin.add_view(CategoryAdmin)
     admin.add_view(ItemAdmin)

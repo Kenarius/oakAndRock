@@ -1,27 +1,18 @@
 from fastapi import Request
 from sqladmin.authentication import AuthenticationBackend
-import hashlib
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD_HASH = hashlib.sha256(
-    os.getenv("ADMIN_PASSWORD", "password").encode()
-).hexdigest()
-SESSION_SECRET = os.getenv("ADMIN_SESSION_SECRET", "default_secret")
+from common.conf.settings import settings
+from common.core.security import verify_admin_credentials
 
 
 class AdminAuthBackend(AuthenticationBackend):
-    """Класс авторизации для SQLAdmin"""
+    """SQLAdmin session authentication using credentials from .env."""
 
     def __init__(self, secret_key: str):
         super().__init__(secret_key)
         self.secret_key = secret_key
 
     async def login(self, request: Request) -> bool:
-        """Проверка логина"""
         if request.session.get("admin_authenticated"):
             return True
 
@@ -29,18 +20,15 @@ class AdminAuthBackend(AuthenticationBackend):
         username = form.get("username")
         password = form.get("password")
 
-        # Твоя проверка из .env
-        if (username == ADMIN_USERNAME and
-                hashlib.sha256(password.encode()).hexdigest() == ADMIN_PASSWORD_HASH):
-            request.session["admin_authenticated"] = True
-            return True
+        if isinstance(username, str) and isinstance(password, str):
+            if verify_admin_credentials(username, password):
+                request.session["admin_authenticated"] = True
+                return True
         return False
 
     async def logout(self, request: Request) -> bool:
-        """Выход"""
         request.session.clear()
         return True
 
     async def authenticate(self, request: Request) -> bool:
-        """Проверка авторизации"""
         return request.session.get("admin_authenticated", False)

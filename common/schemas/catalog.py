@@ -5,5 +5,5 @@ class CatalogSchema(BaseModel):
     """Catalog schema."""
 
     title: str
-    image: str
+    image_url: str
     pdf_url: str

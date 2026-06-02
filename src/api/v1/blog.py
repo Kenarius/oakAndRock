@@ -1,9 +1,10 @@
-from fastapi import UploadFile
+from fastapi import Depends, UploadFile
 from uuid import UUID
 
 from common.core.router import APIRouter
+from src.api.dependencies.auth import is_authorized
 from common.db import get_async_session
-from common.schemas.blog import BlogSchema, CreateBlogSchema
+from common.schemas.blog import BlogSchema
 from src.providers.blog import provide_blog_service
 
 api_router = APIRouter()
@@ -27,6 +28,7 @@ async def get_all_blogs() -> list[BlogSchema]:
 @api_router.post(
     "/",
     response_model=BlogSchema,
+    dependencies=[Depends(is_authorized)],
 )
 async def create_blog(
         title: str,
@@ -46,6 +48,7 @@ async def create_blog(
 @api_router.patch(
     "/{blog_id}",
     response_model=BlogSchema,
+    dependencies=[Depends(is_authorized)],
 )
 async def update_blog(
         blog_id: UUID,
@@ -64,7 +67,8 @@ async def update_blog(
 
 @api_router.delete(
     "/{item_id}",
-    status_code=204
+    status_code=204,
+    dependencies=[Depends(is_authorized)],
 )
 async def delete_blog_by_id(item_id: UUID):
     """Delete blog."""
