@@ -10,5 +10,5 @@ class Catalog(BaseModel, UUIDMixin, TimestampMixin):
     __tablename__ = "catalog"
 
     title: Mapped[str] = mapped_column(String(255))
-    image: Mapped[str] = mapped_column(Text)
-    pdf_url: Mapped[str] = mapped_column(String(500))
+    image_url: Mapped[str] = mapped_column(String(5000))
+    pdf_url: Mapped[str] = mapped_column(String(5000))

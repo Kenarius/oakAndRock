@@ -1,6 +1,9 @@
 import uuid as _uuid
 
+from fastapi import Depends
+
 from common.core.router import APIRouter
+from src.api.dependencies.auth import is_authorized
 from common.db import get_async_session
 from common.schemas.catalog import CatalogSchema
 from common.schemas.category import DetailCategorySchema, ShortCategorySchema, CatalogsAndCategoriesResponse
@@ -42,3 +45,16 @@ async def get_all_category() -> CatalogsAndCategoriesResponse:
         categories=parsed_categories,
         catalogs=parsed_catalogs,
     )
+
+@api_router.delete(
+    "/{item_id}",
+    status_code=204,
+    dependencies=[Depends(is_authorized)],
+)
+async def delete_category_by_id(item_id: _uuid.UUID):
+    """Delete category."""
+    async with get_async_session() as session:
+        service = provide_category_service(session)
+        await service.delete_by_uuid(item_id)
+
+    return

@@ -123,7 +123,7 @@ class CatalogAdmin(ModelView, model=Catalog):
     column_list = [
         Catalog.uuid,
         Catalog.title,
-        Catalog.image,
+        Catalog.image_url,
         Catalog.pdf_url,
         Catalog.created_at,
     ]
@@ -131,7 +131,7 @@ class CatalogAdmin(ModelView, model=Catalog):
     column_sortable_list = [Catalog.created_at, Catalog.title]
 
     column_formatters = {
-        Catalog.image: lambda value, _: (
+        Catalog.image_url: lambda value, _: (
             f'<img src="{value}" style="max-height: 100px; max-width: 100px;" />'
             if value else ""
         ),
@@ -142,7 +142,7 @@ class CatalogAdmin(ModelView, model=Catalog):
     }
 
     form_widget_args = {
-        Catalog.image: {"placeholder": "URL изображения каталога"},
+        Catalog.image_url: {"placeholder": "URL изображения каталога"},
         Catalog.pdf_url: {"placeholder": "https://example.com/catalog.pdf"},
     }
 

@@ -1,6 +1,7 @@
 """Common settings module."""
 import os
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +19,31 @@ class PostgresSettings(BaseSettings):
         return ASYNC_DATABASE_URL
 
 
+class AdminAuthSettings(BaseSettings):
+    """Admin panel and API auth credentials from environment."""
+
+    username: str = Field(default="admin", validation_alias="ADMIN_USERNAME")
+    password: str = Field(default="password", validation_alias="ADMIN_PASSWORD")
+    session_secret: str = Field(default="default_secret", validation_alias="ADMIN_SESSION_SECRET")
+    jwt_secret: str | None = Field(default=None, validation_alias="ADMIN_JWT_SECRET")
+    jwt_algorithm: str = Field(default="HS256", validation_alias="ADMIN_JWT_ALGORITHM")
+    access_token_expire_minutes: int = Field(default=60, validation_alias="ADMIN_ACCESS_TOKEN_EXPIRE_MINUTES")
+    refresh_token_expire_minutes: int = Field(
+        default=60 * 24 * 30,  # 30 days
+        validation_alias="ADMIN_REFRESH_TOKEN_EXPIRE_MINUTES",
+    )
+
+    model_config = SettingsConfigDict(
+        env_file=[".env", ".env.prod"],
+        populate_by_name=True,
+        extra="ignore",
+    )
+
+    @property
+    def effective_jwt_secret(self) -> str:
+        return self.jwt_secret or self.session_secret
+
+
 class OakSettings(BaseSettings):
     """Oak app settings class."""
 
@@ -29,14 +55,21 @@ class OakSettings(BaseSettings):
     description: str = 'Oak service'
     docs_prefix: str = '/oak'
 
-    model_config = SettingsConfigDict(env_prefix="OAK_APP_", env_file=[".env", ".env.prod"])
+    model_config = SettingsConfigDict(
+        env_prefix="OAK_APP_",
+        env_file=[".env", ".env.prod"],
+        extra="ignore",
+    )
 
 
 class Settings(BaseSettings):
     """Settings of common package."""
 
+    model_config = SettingsConfigDict(extra="ignore")
+
     postgres: PostgresSettings = PostgresSettings()
     oak_app: OakSettings = OakSettings()
+    admin_auth: AdminAuthSettings = AdminAuthSettings()
 
 
 settings = Settings()

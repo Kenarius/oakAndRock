@@ -1,5 +1,7 @@
 """Blog repository."""
+from typing import Union, Sequence, Any
 
+from sqlalchemy import Row, RowMapping, select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common.db.models.blog import Blog
